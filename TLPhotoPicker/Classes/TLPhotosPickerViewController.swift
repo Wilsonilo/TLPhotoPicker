@@ -205,7 +205,6 @@ open class TLPhotosPickerViewController: UIViewController {
     private var thumbnailSize = CGSize.zero
     private var placeholderThumbnail: UIImage? = nil
     private var cameraImage: UIImage? = nil
-    private var customAlertView:UIView?
     
     deinit {
         //print("deinit TLPhotosPickerViewController")
@@ -471,7 +470,6 @@ extension TLPhotosPickerViewController {
         self.customDataSouces?.registerSupplementView(collectionView: self.collectionView)
         self.navigationBar.delegate = self
         updateUserInterfaceStyle()
-        setupAlertView()
     }
     
     private func updatePresentLimitedLibraryButton() {
@@ -486,25 +484,6 @@ extension TLPhotosPickerViewController {
         guard self.focusedCollection != nil else { return }
         self.titleLabel.text = self.focusedCollection?.title
         updatePresentLimitedLibraryButton()
-    }
-    
-    private func setupAlertView(){
-        if let customAlertView = self.customAlertView {
-            // Set the height based on the height of the custom
-            self.heightAlertViewConstraint.constant = customAlertView.frame.size.height
-            
-            // add the view to the wrapper
-            self.alertView.addSubview(customAlertView)
-            customAlertView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                customAlertView.leadingAnchor.constraint(equalTo: self.alertView.leadingAnchor),
-                customAlertView.trailingAnchor.constraint(equalTo: self.alertView.trailingAnchor),
-                customAlertView.topAnchor.constraint(equalTo: self.alertView.topAnchor),
-                customAlertView.bottomAnchor.constraint(equalTo: self.alertView.bottomAnchor)
-            ])
-            
-            self.view.layoutIfNeeded()
-        }
     }
     
     private func reloadCollectionView() {
