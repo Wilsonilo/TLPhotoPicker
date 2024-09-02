@@ -381,7 +381,7 @@ open class TLPhotosPickerViewController: UIViewController {
     }
     
     // MARK: - Alert Management -
-    func showAlert(animationDuration:TimeInterval = 0.4){
+    open func showAlert(animationDuration:TimeInterval = 0.4){
         self.collectionViewTopConstraint.constant = self.alertView.frame.size.height
         self.wrapperViewTopConstraint.constant = self.alertView.frame.size.height
         UIView.animate(withDuration: animationDuration) {
@@ -390,7 +390,7 @@ open class TLPhotosPickerViewController: UIViewController {
         }
     }
     
-    func hideAlert(animationDuration:TimeInterval = 0.4){
+    open func hideAlert(animationDuration:TimeInterval = 0.4){
         self.collectionViewTopConstraint.constant = 0
         self.wrapperViewTopConstraint.constant = 0
         UIView.animate(withDuration: animationDuration) {
