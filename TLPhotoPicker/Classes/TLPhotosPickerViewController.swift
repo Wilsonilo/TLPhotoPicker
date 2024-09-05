@@ -16,13 +16,13 @@ import MobileCoreServices
 public class FullAccessPhotoLibraryViewControllerViewModel {
     
     /// What is the Max Number of photos
-    var maxNumberOfPhotos   = 6
+    public var maxNumberOfPhotos   = 6
     
     /// How many slots are left to add to the profile
-    var photoSlotsLeft      = 6
+    public var photoSlotsLeft      = 6
     
     /// Keep track of selected items
-    var selectedAssets      = [TLPHAsset]()
+    public var selectedAssets      = [TLPHAsset]()
 
     // MARK: - Init -
     init(photoSlotsLeft:Int = 6, selectedAssets: [TLPHAsset] = [TLPHAsset](), maxNumberOfPhotos:Int = 6) {
