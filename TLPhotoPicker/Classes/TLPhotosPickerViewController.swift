@@ -25,7 +25,7 @@ public class FullAccessPhotoLibraryViewControllerViewModel {
     public var selectedAssets      = [TLPHAsset]()
 
     // MARK: - Init -
-    init(photoSlotsLeft:Int = 6, selectedAssets: [TLPHAsset] = [TLPHAsset](), maxNumberOfPhotos:Int = 6) {
+    public init(photoSlotsLeft:Int = 6, selectedAssets: [TLPHAsset] = [TLPHAsset](), maxNumberOfPhotos:Int = 6) {
         self.photoSlotsLeft    = photoSlotsLeft
         self.selectedAssets    = selectedAssets
         self.maxNumberOfPhotos = maxNumberOfPhotos
