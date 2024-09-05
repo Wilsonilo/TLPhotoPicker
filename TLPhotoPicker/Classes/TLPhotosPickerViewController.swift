@@ -11,6 +11,27 @@ import Photos
 import PhotosUI
 import MobileCoreServices
 
+// MARK: - FullAccessPhotoLibraryViewControllerViewMode -
+/// Control Information between this VC and the cells on the collection view
+public class FullAccessPhotoLibraryViewControllerViewModel {
+    
+    /// What is the Max Number of photos
+    var maxNumberOfPhotos   = 6
+    
+    /// How many slots are left to add to the profile
+    var photoSlotsLeft      = 6
+    
+    /// Keep track of selected items
+    var selectedAssets      = [TLPHAsset]()
+
+    // MARK: - Init -
+    init(photoSlotsLeft:Int = 6, selectedAssets: [TLPHAsset] = [TLPHAsset](), maxNumberOfPhotos:Int = 6) {
+        self.photoSlotsLeft    = photoSlotsLeft
+        self.selectedAssets    = selectedAssets
+        self.maxNumberOfPhotos = maxNumberOfPhotos
+    }
+}
+
 public protocol TLPhotosPickerViewControllerDelegate: AnyObject {
     func dismissPhotoPicker(withPHAssets: [PHAsset])
     func dismissPhotoPicker(withTLPHAssets: [TLPHAsset])
@@ -196,7 +217,7 @@ open class TLPhotosPickerViewController: UIViewController {
     private var didCancel: (() -> Void)? = nil
     
     private var collections = [TLAssetsCollection]()
-    private var focusedCollection: TLAssetsCollection? = nil
+    public var focusedCollection: TLAssetsCollection? = nil
     private var requestIDs = SynchronizedDictionary<IndexPath,PHImageRequestID>()
     private var playRequestID: (indexPath: IndexPath, requestID: PHImageRequestID)? = nil
     private var photoLibrary = TLPhotoLibrary()
@@ -205,6 +226,9 @@ open class TLPhotosPickerViewController: UIViewController {
     private var thumbnailSize = CGSize.zero
     private var placeholderThumbnail: UIImage? = nil
     private var cameraImage: UIImage? = nil
+    
+    /// Control Information between this VC and the cells on the collection view
+    public var viewModel:FullAccessPhotoLibraryViewControllerViewModel!
     
     deinit {
         //print("deinit TLPhotosPickerViewController")
@@ -970,14 +994,14 @@ extension TLPhotosPickerViewController: PHPhotoLibraryChangeObserver {
 
 // MARK: - UICollectionView delegate & datasource
 extension TLPhotosPickerViewController: UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDataSourcePrefetching {
-    private func getSelectedAssets(_ asset: TLPHAsset) -> TLPHAsset? {
+    public func getSelectedAssets(_ asset: TLPHAsset) -> TLPHAsset? {
         if let index = self.selectedAssets.firstIndex(where: { $0.phAsset == asset.phAsset }) {
             return self.selectedAssets[index]
         }
         return nil
     }
     
-    private func orderUpdateCells() {
+    public func orderUpdateCells() {
         let visibleIndexPaths = self.collectionView.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row })
         for indexPath in visibleIndexPaths {
             guard let cell = self.collectionView.cellForItem(at: indexPath) as? TLPhotoCollectionViewCell else { continue }
@@ -1305,7 +1329,7 @@ extension TLPhotosPickerViewController {
         }
     }
     
-    func toggleSelection(for cell: TLPhotoCollectionViewCell, at indexPath: IndexPath) {
+    public func toggleSelection(for cell: TLPhotoCollectionViewCell, at indexPath: IndexPath) {
         guard let collection = focusedCollection, var asset = collection.getTLAsset(at: indexPath), let phAsset = asset.phAsset else { return }
         
         cell.popScaleAnim()
@@ -1317,13 +1341,13 @@ extension TLPhotosPickerViewController {
             #if swift(>=4.1)
             selectedAssets = selectedAssets.enumerated().compactMap({ (offset,asset) -> TLPHAsset? in
                 var asset = asset
-                asset.selectedOrder = offset + 1
+                asset.selectedOrder = offset + 1 + ( self.viewModel.maxNumberOfPhotos - self.viewModel.photoSlotsLeft )
                 return asset
             })
             #else
             selectedAssets = selectedAssets.enumerated().flatMap({ (offset,asset) -> TLPHAsset? in
                 var asset = asset
-                asset.selectedOrder = offset + 1
+                asset.selectedOrder = offset + 1 + ( self.viewModel.maxNumberOfPhotos - self.viewModel.photoSlotsLeft )
                 return asset
             })
             #endif
@@ -1338,7 +1362,7 @@ extension TLPhotosPickerViewController {
             logDelegate?.selectedPhoto(picker: self, at: indexPath.row)
             guard !maxCheck(), canSelect(phAsset: phAsset) else { return }
             
-            asset.selectedOrder = selectedAssets.count + 1
+            asset.selectedOrder = selectedAssets.count + 1 + ( self.viewModel.maxNumberOfPhotos - self.viewModel.photoSlotsLeft )
             selectedAssets.append(asset)
             cell.selectedAsset = true
             cell.orderLabel?.text = "\(asset.selectedOrder)"
